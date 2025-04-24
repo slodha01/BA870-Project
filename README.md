@@ -1,2 +1,2 @@
 # BA870-Project
-Team: Shreya Lodha, Sally Kong, Victoria Carlsten.
+Team: Shreya Lodha, Fan Hong (Sally) Kong, Victoria Carlsten.
