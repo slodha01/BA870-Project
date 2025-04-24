@@ -1,233 +1,196 @@
-{
-  "nbformat": 4,
-  "nbformat_minor": 0,
-  "metadata": {
-    "colab": {
-      "provenance": [],
-      "include_colab_link": true
-    },
-    "kernelspec": {
-      "name": "python3",
-      "display_name": "Python 3"
-    },
-    "language_info": {
-      "name": "python"
+
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+st.set_page_config(page_title="Financial Risk Analyzer", layout="centered")
+
+# Sidebar navigation
+tabs = [
+    "Project Overview",
+    "Dataset Description",
+    "Data Dictionary",
+    "Upload File",
+    "Beneish Model",
+    "Implications - Detecting Fraud",
+    "Next Step"
+]
+selected_tab = st.sidebar.selectbox("Navigate Project Sections", tabs)
+
+# 1. Project Overview
+if selected_tab == "Project Overview":
+    st.title("Project Overview")
+    st.markdown("<h2 style='color: navy;'>Business Problem</h2>", unsafe_allow_html=True)
+    st.write("""
+
+    By: Fan Hong (Sally) Kong, Shreya Lodha, Victoria Carlsten
+
+    The project aims to detect financial fraud by identifying anomalies in financial statements using the
+    **Beneish M-Score** and **Altman’s Z Score**. By applying these fraud detection techniques, we seek to
+    flag companies that may be manipulating earnings, reducing financial transparency, and posing risks to
+    investors and creditors.
+
+    The objective is to enhance fraud detection methodologies for credit risk assessment and financial
+    stability evaluation. We will then use the M-score from the Beneish model to try and predict future
+    bankruptcy of the companies that engage in manipulation.
+    """)
+    st.markdown("<h2 style='color: navy;'>Data Set</h2>", unsafe_allow_html=True)
+    st.write("""
+    Our dataset was extracted from WRDS using **Compustat** to compile financial and accounting ratio data
+    from **2010–2025** for publicly traded companies in the **technology industry**.
+
+    For more information, visit the **‘Dataset Description’** tab.
+    """)
+
+# 2. Dataset Description
+elif selected_tab == "Dataset Description":
+    st.title("Dataset Description")
+    st.write("_____")
+
+# 3. Data Dictionary
+elif selected_tab == "Data Dictionary":
+    st.title("Dataset Dictionary")
+
+    # Fraud.csv Data Dictionary
+    st.subheader("Fraud.csv Variables")
+    fraud_dict = {
+        "Column Name": [
+            "RESTATEMENT_NOTIFICATION_KEY",
+            "RESTATEMENT_TYPE_FKEY",
+            "RESTATEMENT_TYPE",
+            "FILE_DATE",
+            "COMPANY_FKEY",
+            "BEST_EDGAR_TICKER",
+            "is_fraud"
+        ],
+        "Description": [
+            "Restatement Notification Key",
+            "Restatement Type Key",
+            "Restatement Type",
+            "File Date",
+            "Company Key",
+            "Best Edgar Ticker",
+            "If company committed fraud (1 = committed, 0 = not commit)"
+        ]
     }
-  },
-  "cells": [
-    {
-      "cell_type": "markdown",
-      "metadata": {
-        "id": "view-in-github",
-        "colab_type": "text"
-      },
-      "source": [
-        "<a href=\"https://colab.research.google.com/github/slodha01/BA870-Project/blob/main/Shreya_Copy_of_Multi_page_Streamlit_App.py\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
-      ]
-    },
-    {
-      "cell_type": "code",
-      "source": [
-        "import streamlit as st\n",
-        "import pandas as pd\n",
-        "import matplotlib.pyplot as plt\n",
-        "import seaborn as sns\n",
-        "\n",
-        "st.set_page_config(page_title=\"Financial Risk Analyzer\", layout=\"centered\")\n",
-        "\n",
-        "# Sidebar navigation\n",
-        "tabs = [\n",
-        "    \"Project Overview\",\n",
-        "    \"Dataset Description\",\n",
-        "    \"Data Dictionary\",\n",
-        "    \"Upload File\",\n",
-        "    \"Beneish Model\",\n",
-        "    \"Implications - Detecting Fraud\",\n",
-        "    \"Next Step\"\n",
-        "]\n",
-        "selected_tab = st.sidebar.selectbox(\"Navigate Project Sections\", tabs)\n",
-        "\n",
-        "# 1. Project Overview\n",
-        "if selected_tab == \"Project Overview\":\n",
-        "    st.title(\"Project Overview\")\n",
-        "    st.markdown(\"<h2 style='color: navy;'>Business Problem</h2>\", unsafe_allow_html=True)\n",
-        "    st.write(\"\"\"\n",
-        "\n",
-        "    By: Fan Hong (Sally) Kong, Shreya Lodha, Victoria Carlsten\n",
-        "\n",
-        "    The project aims to detect financial fraud by identifying anomalies in financial statements using the\n",
-        "    **Beneish M-Score** and **Altman’s Z Score**. By applying these fraud detection techniques, we seek to\n",
-        "    flag companies that may be manipulating earnings, reducing financial transparency, and posing risks to\n",
-        "    investors and creditors.\n",
-        "\n",
-        "    The objective is to enhance fraud detection methodologies for credit risk assessment and financial\n",
-        "    stability evaluation. We will then use the M-score from the Beneish model to try and predict future\n",
-        "    bankruptcy of the companies that engage in manipulation.\n",
-        "    \"\"\")\n",
-        "    st.markdown(\"<h2 style='color: navy;'>Data Set</h2>\", unsafe_allow_html=True)\n",
-        "    st.write(\"\"\"\n",
-        "    Our dataset was extracted from WRDS using **Compustat** to compile financial and accounting ratio data\n",
-        "    from **2010–2025** for publicly traded companies in the **technology industry**.\n",
-        "\n",
-        "    For more information, visit the **‘Dataset Description’** tab.\n",
-        "    \"\"\")\n",
-        "\n",
-        "# 2. Dataset Description\n",
-        "elif selected_tab == \"Dataset Description\":\n",
-        "    st.title(\"Dataset Description\")\n",
-        "    st.write(\"_____\")\n",
-        "\n",
-        "# 3. Data Dictionary\n",
-        "elif selected_tab == \"Data Dictionary\":\n",
-        "    st.title(\"Dataset Dictionary\")\n",
-        "\n",
-        "    # Fraud.csv Data Dictionary\n",
-        "    st.subheader(\"Fraud.csv Variables\")\n",
-        "    fraud_dict = {\n",
-        "        \"Column Name\": [\n",
-        "            \"RESTATEMENT_NOTIFICATION_KEY\",\n",
-        "            \"RESTATEMENT_TYPE_FKEY\",\n",
-        "            \"RESTATEMENT_TYPE\",\n",
-        "            \"FILE_DATE\",\n",
-        "            \"COMPANY_FKEY\",\n",
-        "            \"BEST_EDGAR_TICKER\",\n",
-        "            \"is_fraud\"\n",
-        "        ],\n",
-        "        \"Description\": [\n",
-        "            \"Restatement Notification Key\",\n",
-        "            \"Restatement Type Key\",\n",
-        "            \"Restatement Type\",\n",
-        "            \"File Date\",\n",
-        "            \"Company Key\",\n",
-        "            \"Best Edgar Ticker\",\n",
-        "            \"If company committed fraud (1 = committed, 0 = not commit)\"\n",
-        "        ]\n",
-        "    }\n",
-        "    st.dataframe(pd.DataFrame(fraud_dict))\n",
-        "\n",
-        "    # Financialdata.csv & additional.csv Data Dictionary\n",
-        "    st.subheader(\"Financialdata.csv & additional.csv Variables\")\n",
-        "    financial_dict = {\n",
-        "        \"Column Name\": [\n",
-        "            \"Ivao\", \"ivst\", \"gvkey\", \"datadate\", \"fyear\", \"indfmt\", \"consol\", \"popsrc\", \"datafmt\", \"tic\",\n",
-        "            \"conm\", \"curcd\", \"fyr\", \"act\", \"at\", \"cogs\", \"dltt\", \"dp\", \"intan\", \"ist\", \"lt\", \"ni\", \"oancf\",\n",
-        "            \"ppegt\", \"rect\", \"revt\", \"urect\", \"xopr\", \"xsaga\", \"costat\", \"gsector\", \"gsubind\", \"idbflag\", \"sic\"\n",
-        "        ],\n",
-        "        \"Description\": [\n",
-        "            \"Investment and Advances - Other\", \"Short-Term Investments - Total\", \"Global Company Key\",\n",
-        "            \"Data Date\", \"Data Year - Fiscal\", \"Industry Format\", \"Consolidation Code\", \"Population Source\",\n",
-        "            \"Data Format\", \"Ticker\", \"Company Name\", \"ISO Currency Code\", \"Fiscal Year-end Month\",\n",
-        "            \"Current Assets - Total\", \"Current Assets - Total\", \"Cost of Goods Sold\", \"Long-Term Debt - Total\",\n",
-        "            \"Depreciation and Amortization\", \"Intangible Assets - Total\", \"Investment Securities - Total\", \"Liabilities - Total\", \"Net Income\", \"Operating Activities - Net Cash Flow\",\n",
-        "            \"Property, Plant, and Equipment - Total\", \"Receivables - Total\", \"Revenue - Total\", \"Receivables (Net)\",\n",
-        "            \"Operating Expenses - Total\", \"Selling, General, & Administrative Expense\", \"Active/ Inactive Status Market\",\n",
-        "            \"GIC Sector\", \"GIC Sub-Industries\", \"International, Domestic, Both Indicator\",\n",
-        "            \"Standard Industry Classification Code\"\n",
-        "        ]\n",
-        "    }\n",
-        "    st.dataframe(pd.DataFrame(financial_dict))\n",
-        "\n",
-        "# 4. Upload File\n",
-        "elif selected_tab == \"Upload File\":\n",
-        "    st.title(\"Upload Your Processed Dataset (CSV)\")\n",
-        "    uploaded_file = st.file_uploader(\"Upload your file\", type=\"csv\")\n",
-        "\n",
-        "    if uploaded_file:\n",
-        "        df = pd.read_csv(uploaded_file)\n",
-        "\n",
-        "        required_cols = {'is_fraud', 'z_score', 'bankruptcy_risk'}\n",
-        "        if not required_cols.issubset(df.columns):\n",
-        "            st.error(f\"Your dataset must contain the following columns: {', '.join(required_cols)}\")\n",
-        "        else:\n",
-        "            st.success(\"File successfully loaded!\")\n",
-        "\n",
-        "            with st.expander(\"View raw data\"):\n",
-        "                st.dataframe(df.head())\n",
-        "\n",
-        "            st.subheader(\"Fraud vs. Bankruptcy Risk Counts\")\n",
-        "            summary = df.groupby(['is_fraud', 'bankruptcy_risk']).size().reset_index(name='count')\n",
-        "            st.dataframe(summary)\n",
-        "\n",
-        "            st.subheader(\"Risk Distribution Chart\")\n",
-        "            fig, ax = plt.subplots(figsize=(8, 5))\n",
-        "            sns.countplot(data=df, x='bankruptcy_risk', hue='is_fraud', palette='Set2', ax=ax)\n",
-        "            ax.set_title('Fraud Risk vs. Bankruptcy Risk')\n",
-        "            ax.set_xlabel(\"Bankruptcy Risk Category\")\n",
-        "            ax.set_ylabel(\"Number of Companies\")\n",
-        "            ax.legend(title=\"Fraudulent (Beneish M-Score)\", labels=[\"No\", \"Yes\"])\n",
-        "            st.pyplot(fig)\n",
-        "\n",
-        "            st.subheader(\"Altman Z′-Score Summary\")\n",
-        "            stats = df.groupby('is_fraud')['z_score'].agg(['mean', 'median', 'std', 'count']).rename(\n",
-        "                index={0: 'Non-Fraud', 1: 'Fraud'}\n",
-        "            )\n",
-        "            st.dataframe(stats)\n",
-        "    else:\n",
-        "        st.info(\"Upload a CSV to begin.\")\n",
-        "\n",
-        "# 5. Beneish Model\n",
-        "elif selected_tab == \"Beneish Model\":\n",
-        "    st.title(\"Beneish M-Score Model\")\n",
-        "    st.write(\"Insert Beneish M-Score analysis and logic here.\")\n",
-        "    st.markdown(\"## 🧠 Beneish M-Score Model Overview\")\n",
-        "    st.markdown(\"\"\"\n",
-        "    The Beneish M-Score is used to detect earnings manipulation by analyzing 8 financial ratios.\n",
-        "    In this project, we trained a machine learning model on WRDS Compustat data to classify companies\n",
-        "    as potential manipulators (M-Score > -2.22).\n",
-        "\n",
-        "    We used the following ratios as input features:\n",
-        "    - DSRI: Days Sales in Receivables Index\n",
-        "    - GMI: Gross Margin Index\n",
-        "    - AQI: Asset Quality Index\n",
-        "    - SGI: Sales Growth Index\n",
-        "    - DEPI: Depreciation Index\n",
-        "    - SGAI: Sales, General, and Admin Expenses Index\n",
-        "    - LVGI: Leverage Index\n",
-        "    - TATA: Total Accruals to Total Assets\n",
-        "\n",
-        "    We trained a Random Forest Regressor to identify manipulators. We also used the XGBoost, but it didn't perform as well.\n",
-        "    \"\"\")\n",
-        "    st.markdown(\"### 📄 Model Code (Simplified)\")\n",
-        "\n",
-        "    code = '''\n",
-        "    from sklearn.ensemble import RandomForestClassifier\n",
-        "    from sklearn.model_selection import train_test_split\n",
-        "\n",
-        "    # Features and target\n",
-        "    X = fraud_model_data[[\"DSRI\", \"GMI\", \"AQI\", \"SGI\", \"DEPI\", \"SGAI\", \"LVGI\", \"TATA\"]]\n",
-        "    y = fraud_model_data[\"is_fraud\"]\n",
-        "\n",
-        "    # Train/test split\n",
-        "    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)\n",
-        "\n",
-        "    # Model\n",
-        "    model = RandomForestClassifier(n_estimators=100, random_state=42)\n",
-        "    model.fit(X_train, y_train)\n",
-        "    '''\n",
-        "\n",
-        "    st.code(code, language='python')\n",
-        "\n",
-        "    st.markdown(\"### ✅ Model Performance\")\n",
-        "\n",
-        "    st.markdown(\"- **Accuracy**: 88.6%\")\n",
-        "    st.markdown(\"- **Precision**: 82.3%\")\n",
-        "    st.markdown(\"- **Recall**: 76.5%\")\n",
-        "\n",
-        "# 6. Implications - Detecting Fraud\n",
-        "elif selected_tab == \"Implications - Detecting Fraud\":\n",
-        "    st.title(\"Implications of Fraud Detection\")\n",
-        "    st.write(\"Insert interpretation of fraud signals and business implications here.\")\n",
-        "\n",
-        "# 7. Next Step\n",
-        "elif selected_tab == \"Next Step\":\n",
-        "    st.title(\"Next Steps\")\n",
-        "    st.write(\"Insert recommendations, improvements, and roadmap.\")"
-      ],
-      "metadata": {
-        "id": "x82i5FHsJA42"
-      },
-      "execution_count": null,
-      "outputs": []
+    st.dataframe(pd.DataFrame(fraud_dict))
+
+    # Financialdata.csv & additional.csv Data Dictionary
+    st.subheader("Financialdata.csv & additional.csv Variables")
+    financial_dict = {
+        "Column Name": [
+            "Ivao", "ivst", "gvkey", "datadate", "fyear", "indfmt", "consol", "popsrc", "datafmt", "tic",
+            "conm", "curcd", "fyr", "act", "at", "cogs", "dltt", "dp", "intan", "ist", "lt", "ni", "oancf",
+            "ppegt", "rect", "revt", "urect", "xopr", "xsaga", "costat", "gsector", "gsubind", "idbflag", "sic"
+        ],
+        "Description": [
+            "Investment and Advances - Other", "Short-Term Investments - Total", "Global Company Key",
+            "Data Date", "Data Year - Fiscal", "Industry Format", "Consolidation Code", "Population Source",
+            "Data Format", "Ticker", "Company Name", "ISO Currency Code", "Fiscal Year-end Month",
+            "Current Assets - Total", "Current Assets - Total", "Cost of Goods Sold", "Long-Term Debt - Total",
+            "Depreciation and Amortization", "Intangible Assets - Total", "Investment Securities - Total", "Liabilities - Total", "Net Income", "Operating Activities - Net Cash Flow",
+            "Property, Plant, and Equipment - Total", "Receivables - Total", "Revenue - Total", "Receivables (Net)",
+            "Operating Expenses - Total", "Selling, General, & Administrative Expense", "Active/ Inactive Status Market",
+            "GIC Sector", "GIC Sub-Industries", "International, Domestic, Both Indicator",
+            "Standard Industry Classification Code"
+        ]
     }
-  ]
-}
+    st.dataframe(pd.DataFrame(financial_dict))
+
+# 4. Upload File
+elif selected_tab == "Upload File":
+    st.title("Upload Your Processed Dataset (CSV)")
+    uploaded_file = st.file_uploader("Upload your file", type="csv")
+
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
+
+        required_cols = {'is_fraud', 'z_score', 'bankruptcy_risk'}
+        if not required_cols.issubset(df.columns):
+            st.error(f"Your dataset must contain the following columns: {', '.join(required_cols)}")
+        else:
+            st.success("File successfully loaded!")
+
+            with st.expander("View raw data"):
+                st.dataframe(df.head())
+
+            st.subheader("Fraud vs. Bankruptcy Risk Counts")
+            summary = df.groupby(['is_fraud', 'bankruptcy_risk']).size().reset_index(name='count')
+            st.dataframe(summary)
+
+            st.subheader("Risk Distribution Chart")
+            fig, ax = plt.subplots(figsize=(8, 5))
+            sns.countplot(data=df, x='bankruptcy_risk', hue='is_fraud', palette='Set2', ax=ax)
+            ax.set_title('Fraud Risk vs. Bankruptcy Risk')
+            ax.set_xlabel("Bankruptcy Risk Category")
+            ax.set_ylabel("Number of Companies")
+            ax.legend(title="Fraudulent (Beneish M-Score)", labels=["No", "Yes"])
+            st.pyplot(fig)
+
+            st.subheader("Altman Z′-Score Summary")
+            stats = df.groupby('is_fraud')['z_score'].agg(['mean', 'median', 'std', 'count']).rename(
+                index={0: 'Non-Fraud', 1: 'Fraud'}
+            )
+            st.dataframe(stats)
+    else:
+        st.info("Upload a CSV to begin.")
+
+# 5. Beneish Model
+elif selected_tab == "Beneish Model":
+    st.title("Beneish M-Score Model")
+    st.write("Insert Beneish M-Score analysis and logic here.")
+    # st.markdown("## 🧠 Beneish M-Score Model Overview")
+    # st.markdown("""
+    # The Beneish M-Score is used to detect earnings manipulation by analyzing 8 financial ratios.
+    # In this project, we trained a machine learning model on WRDS Compustat data to classify companies 
+    # as potential manipulators (M-Score > -2.22).
+
+    # We used the following ratios as input features:
+    # - DSRI: Days Sales in Receivables Index
+    # - GMI: Gross Margin Index
+    # - AQI: Asset Quality Index
+    # - SGI: Sales Growth Index
+    # - DEPI: Depreciation Index
+    # - SGAI: Sales, General, and Admin Expenses Index
+    # - LVGI: Leverage Index
+    # - TATA: Total Accruals to Total Assets
+
+    # We trained a Random Forest Regressor to identify manipulators. We also used the XGBoost, but it didn't perform as well.
+    # """)
+    # st.markdown("### 📄 Model Code (Simplified)")
+
+    # code = '''
+    # from sklearn.ensemble import RandomForestClassifier
+    # from sklearn.model_selection import train_test_split
+
+    # # Features and target
+    # X = fraud_model_data[["DSRI", "GMI", "AQI", "SGI", "DEPI", "SGAI", "LVGI", "TATA"]]
+    # y = fraud_model_data["is_fraud"]
+
+    # # Train/test split
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    # # Model
+    # model = RandomForestClassifier(n_estimators=100, random_state=42)
+    # model.fit(X_train, y_train)
+    # '''
+
+    # st.code(code, language='python')
+
+    # st.markdown("### ✅ Model Performance")
+
+    # st.markdown("- **Accuracy**: 88.6%")
+    # st.markdown("- **Precision**: 82.3%")
+    # st.markdown("- **Recall**: 76.5%")
+
+# 6. Implications - Detecting Fraud
+elif selected_tab == "Implications - Detecting Fraud":
+    st.title("Implications of Fraud Detection")
+    st.write("Insert interpretation of fraud signals and business implications here.")
+
+# 7. Next Step
+elif selected_tab == "Next Step":
+    st.title("Next Steps")
+    st.write("Insert recommendations, improvements, and roadmap.")
