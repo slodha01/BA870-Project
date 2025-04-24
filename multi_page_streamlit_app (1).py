@@ -53,30 +53,30 @@ if selected_tab == "Project Overview":
 
 # 2. Dataset Description
 elif selected_tab == "Dataset Description":
-    st.title("🗂️ Dataset Description")
+    st.title("Dataset Description")
 
     st.markdown("""
-    **Final Dataset**: `Merged_dataset.csv`
+    **Final Dataset**: Merged_dataset.csv
     *(Includes: Fraud.csv, Additional.csv, Financialdata.csv)*
 
     All initial datasets were queried and pulled from the **Wharton Research Data Services (WRDS)** via **Compustat**.
     Our team extracted data from the **Fundamentals - Annual** section, filtering for companies in the **technology industry** using the following **SIC codes**:
 
-    `3570, 3571, 3572, 3575, 3577, 3578, 3579, 3661, 3663, 3669, 3672, 3674, 3675, 3676, 3677, 3678, 3679, 7370, 7371, 7372, 7373, 7374, 7375, 7376, 7379`
+    3570, 3571, 3572, 3575, 3577, 3578, 3579, 3661, 3663, 3669, 3672, 3674, 3675, 3676, 3677, 3678, 3679, 7370, 7371, 7372, 7373, 7374, 7375, 7376, 7379
 
     The **ticker symbols** extracted from this dataset were then used to pull consistent company data in both **Fraud.csv** and **Additional.csv**.
     The dataset spans from **2010 to 2025** and contains **annual financial reporting** required for calculating the **Beneish M-Score** and **Altman Z-Score**.
 
     ---
 
-    ### 📄 **File Descriptions**
+    ###**File Descriptions**
 
     - **Financialdata.csv**
       Pulled from **Fundamentals - Annual** in Compustat. This is the **main dataset**, containing common financial statement items necessary for computing the **M-Score** and **Z-Score**.
       It also includes identifying fields such as **Ticker symbol**, **Fiscal Year**, **Global Company Key**, and **GIC sector**.
 
     - **Fraud.csv**
-      Sourced from **Audit Analytics – Financial Restatements** (WRDS), using tickers from `Financialdata.csv`.
+      Sourced from **Audit Analytics – Financial Restatements** (WRDS), using tickers from Financialdata.csv.
       It was used to create **binary fraud labels** for machine learning:
       **1 = Fraudulent**, **0 = Non-Fraudulent**.
 
@@ -92,7 +92,10 @@ elif selected_tab == "Dataset Description":
     """)
 
     # Show image
-    st.image("Screenshot 2025-04-24 at 3.36.42 pm.png", caption="Merged Dataset: Variable Overview", use_column_width=True)
+    st.image(
+       "https://raw.githubusercontent.com/slodha01/BA870-Project/6d5b485387552e07df58265b64d126ec35eec19e/Photos/Dataset_info.png",
+       caption="Merged Dataset: Variable Overview",
+        use_column_width=True)
 
 
 
