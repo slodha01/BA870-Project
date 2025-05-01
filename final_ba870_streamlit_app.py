@@ -29,7 +29,7 @@ selected_tab = st.sidebar.selectbox("Navigate Project Sections", tabs)
 if selected_tab == "Project Overview":
     st.write("BA870 Project By: Fan Hong (Sally) Kong, Shreya Lodha, Victoria Carlsten")
     st.title("Project Overview")
-    st.markdown("<h2 style='color: navy;'>Business Problem</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: white;'>Business Problem</h2>", unsafe_allow_html=True)
     st.write("""
 
     The project aims to detect financial fraud by identifying anomalies in financial statements using the
@@ -41,7 +41,7 @@ if selected_tab == "Project Overview":
     stability evaluation. We will then use the M-score from the Beneish model to try and predict future
     bankruptcy of the companies that engage in manipulation.
     """)
-    st.markdown("<h2 style='color: navy;'>Data Set</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: white;'>Data Set</h2>", unsafe_allow_html=True)
     st.write("""
     Our dataset was extracted from WRDS using **Compustat** to compile financial and accounting ratio data
     from **2010–2024** for publicly traded companies in the **technology industry**.
